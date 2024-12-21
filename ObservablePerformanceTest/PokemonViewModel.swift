@@ -16,7 +16,7 @@ class PokemonViewModel {
     
     func fetchPokemons() {
         isLoading = true
-        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=151") else { return }
+        guard let url = URL(string: "https://pokeapi.co/api/v2/pokemon?limit=300") else { return }
         
         URLSession.shared.dataTask(with: url) { [weak self] data, response, error in
             DispatchQueue.main.async {
@@ -31,8 +31,6 @@ class PokemonViewModel {
                 do {
                     let response = try JSONDecoder().decode(PokemonResponse.self, from: data)
                     self?.pokemons = response.results
-                    print("😃Fetched \(response.results.count) Pokemon")
-                    print("🧐Result \(response.results)")
                 } catch {
                     self?.errorMessage = error.localizedDescription
                     print("😄Decode error: \(error)")

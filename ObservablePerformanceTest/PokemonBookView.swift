@@ -8,11 +8,13 @@
 import SwiftUI
 
 struct PokemonListItem: View {
-    @Binding var pokemon: Pokemon
+    @Binding var isFavorite: Bool
+    let name: String
+    let id: Int
     
     var body: some View {
         HStack {
-            AsyncImage(url: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(pokemon.id).png")) { image in
+            AsyncImage(url: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/\(id).png")) { image in
                 image
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -23,9 +25,9 @@ struct PokemonListItem: View {
             }
             
             VStack(alignment: .leading) {
-                Text(pokemon.name.capitalized)
+                Text(name.capitalized)
                     .font(.headline)
-                Text("No.\(pokemon.id)")
+                Text("No.\(id)")
                     .font(.subheadline)
                     .foregroundColor(.gray)
             }
@@ -33,10 +35,10 @@ struct PokemonListItem: View {
             Spacer()
             
             Button(action: {
-                pokemon.isFavorite.toggle()
+                isFavorite.toggle()
             }) {
-                Image(systemName: pokemon.isFavorite ? "heart.fill" : "heart")
-                    .foregroundColor(pokemon.isFavorite ? .red : .gray)
+                Image(systemName: isFavorite ? "heart.fill" : "heart")
+                    .foregroundColor(isFavorite ? .red : .gray)
             }
         }
         .padding(.vertical, 4)
@@ -47,9 +49,12 @@ struct PokemonBookView: View {
     @State private var viewModel = PokemonViewModel()
     
     var body: some View {
+        
+        let _ = Self._printChanges()
         NavigationStack {
-            List($viewModel.pokemons) { $pokemon in
-                PokemonListItem(pokemon: $pokemon)
+            List(viewModel.pokemons) { item in
+               @Bindable var sample = item
+               PokemonListItem(isFavorite: $sample.isFavorite, name: item.name, id: item.id)
             }
             .navigationTitle("ポケモン図鑑")
             .overlay {
